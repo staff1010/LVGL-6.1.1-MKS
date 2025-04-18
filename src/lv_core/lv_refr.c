@@ -172,9 +172,9 @@ void lv_disp_refr_task(lv_task_t * task)
 
     /*If refresh happened ...*/
     if(disp_refr->inv_p != 0) {
-        /*In true double buffered mode copy the refreshed areas to the new VDB to keep it up to
-         * date*/
-        if(lv_disp_is_true_double_buf(disp_refr)) {
+        /* In true double buffered mode copy the refreshed areas to the new VDB to keep it up to date.
+         * With set_px_cb we don't know anything about the buffer (even it's size) so skip copying.*/
+        if(lv_disp_is_true_double_buf(disp_refr) && disp_refr->driver.set_px_cb == NULL) {
             lv_disp_buf_t * vdb = lv_disp_get_buf(disp_refr);
 
             /*Flush the content of the VDB*/
@@ -274,7 +274,7 @@ static void lv_refr_areas(void)
     for(i = 0; i < disp_refr->inv_p; i++) {
         /*Refresh the unjoined areas*/
         if(disp_refr->inv_area_joined[i] == 0) {
-			cur_pic.got_addr = 0;
+            cur_pic.got_addr = 0;               // mks
             lv_refr_area(&disp_refr->inv_areas[i]);
 
             if(disp_refr->driver.monitor_cb) px_num += lv_area_get_size(&disp_refr->inv_areas[i]);
@@ -286,7 +286,6 @@ static void lv_refr_areas(void)
  * Refresh an area if there is Virtual Display Buffer
  * @param area_p  pointer to an area to refresh
  */
-
 static void lv_refr_area(const lv_area_t * area_p)
 {
     /*True double buffering: there are two screen sized buffers. Just redraw directly into a
@@ -306,7 +305,7 @@ static void lv_refr_area(const lv_area_t * area_p)
         lv_coord_t w = lv_area_get_width(area_p);
         lv_coord_t h = lv_area_get_height(area_p);
         lv_coord_t y2 =
-            area_p->y2 >= lv_disp_get_ver_res(disp_refr) ? y2 = lv_disp_get_ver_res(disp_refr) - 1 : area_p->y2;
+            area_p->y2 >= lv_disp_get_ver_res(disp_refr) ? lv_disp_get_ver_res(disp_refr) - 1 : area_p->y2;
 
         int32_t max_row = (uint32_t)vdb->size / w;
 

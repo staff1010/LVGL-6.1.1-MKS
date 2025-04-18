@@ -14,7 +14,7 @@
 
 #include "lv_hal_tick.h"
 #include <stddef.h>
-//#include "../../../ui/inc/draw_ui.h"
+
 #if LV_TICK_CUSTOM == 1
 #include LV_TICK_CUSTOM_INCLUDE
 #endif
@@ -49,7 +49,6 @@ static volatile uint8_t tick_irq_flag;
  * You have to call this function periodically
  * @param tick_period the call period of this function in milliseconds
  */
-
 LV_ATTRIBUTE_TICK_INC void lv_tick_inc(uint32_t tick_period)
 {
     tick_irq_flag = 0;

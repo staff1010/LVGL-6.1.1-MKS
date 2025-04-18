@@ -319,15 +319,15 @@ static bool lv_imgbtn_design(lv_obj_t * imgbtn, const lv_area_t * mask, lv_desig
 
 #if LV_IMGBTN_TILED == 0
         const void * src = ext->img_src[state];
-		
-		//Pic_Read(imgbtn->mks_pic_name,bmp_public_buf);
+
+        //Pic_Read(imgbtn->mks_pic_name,bmp_public_buf);
 
         if(lv_img_src_get_type(src) == LV_IMG_SRC_SYMBOL) {
             lv_draw_label(&imgbtn->coords, mask, style, opa_scale, src, LV_TXT_FLAG_NONE, NULL, NULL, NULL, lv_obj_get_base_dir(imgbtn));
         } else {
-        	strcpy((char *)&cur_pic.name[0],(const char *)&imgbtn->mks_pic_name[0]);
-			cur_pic.is_gcode = imgbtn->IsGcode;
-			
+            strcpy((char *)&cur_pic.name[0],(const char *)&imgbtn->mks_pic_name[0]);
+            cur_pic.is_gcode = imgbtn->IsGcode;
+
             lv_draw_img(&imgbtn->coords, mask, src, style, opa_scale);
         }
 #else

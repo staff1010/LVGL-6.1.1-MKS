@@ -127,9 +127,16 @@ bool lv_bidi_letter_is_weak(uint32_t letter)
 
 bool lv_bidi_letter_is_rtl(uint32_t letter)
 {
-     if(letter >= 0x5d0 && letter <= 0x5ea) return true;
     if(letter == 0x202E) return true;               /*Unicode of LV_BIDI_RLO*/
-//    if(letter >= 'a' && letter <= 'z') return true;
+
+    /*Check for Persian and Arabic characters [https://en.wikipedia.org/wiki/Arabic_script_in_Unicode]*/
+    if(letter >= 0x600 && letter <= 0x6FF) return true;
+    if(letter >= 0xFB50 && letter <= 0xFDFF) return true;
+    if(letter >= 0xFE70 && letter <= 0xFEFF) return true;
+
+    /*Check for Hebrew characters [https://en.wikipedia.org/wiki/Unicode_and_HTML_for_the_Hebrew_alphabet]*/
+    if(letter >= 0x590 && letter <= 0x5FF) return true;
+    if(letter >= 0xFB1D && letter <= 0xFB4F) return true;
 
     return false;
 }
@@ -148,9 +155,11 @@ bool lv_bidi_letter_is_neutral(uint32_t letter)
 uint16_t lv_bidi_get_logical_pos(const char * str_in, char **bidi_txt, uint32_t len, lv_bidi_dir_t base_dir, uint32_t visual_pos, bool *is_rtl)
 {
     uint32_t pos_conv_len = get_txt_len(str_in, len);
-    void *buf = lv_draw_get_buf(len + pos_conv_len * sizeof(uint16_t));
+    uint32_t txt_buf_size = len + 1;
+    txt_buf_size = (txt_buf_size + 3) & (~0x3);
+    void *buf = lv_draw_get_buf(txt_buf_size + pos_conv_len * sizeof(uint16_t));
     if (bidi_txt) *bidi_txt = buf;
-    uint16_t *pos_conv_buf = (uint16_t*) ((char*)buf + len);
+    uint16_t *pos_conv_buf = (uint16_t*) ((char*)buf + txt_buf_size);
     lv_bidi_process_paragraph(str_in, bidi_txt? *bidi_txt: NULL, len, base_dir, pos_conv_buf, pos_conv_len);
     if (is_rtl) *is_rtl = IS_RTL_POS(pos_conv_buf[visual_pos]);
     return GET_POS(pos_conv_buf[visual_pos]);
@@ -159,9 +168,11 @@ uint16_t lv_bidi_get_logical_pos(const char * str_in, char **bidi_txt, uint32_t 
 uint16_t lv_bidi_get_visual_pos(const char * str_in, char **bidi_txt, uint16_t len, lv_bidi_dir_t base_dir, uint32_t logical_pos, bool *is_rtl)
 {
     uint32_t pos_conv_len = get_txt_len(str_in, len);
-    void *buf = lv_draw_get_buf(len + pos_conv_len * sizeof(uint16_t));
+    uint32_t txt_buf_size = len + 1;
+    txt_buf_size = (txt_buf_size + 3) & (~0x3);
+    void *buf = lv_draw_get_buf(txt_buf_size + pos_conv_len * sizeof(uint16_t));
     if (bidi_txt) *bidi_txt = buf;
-    uint16_t *pos_conv_buf = (uint16_t*) ((char*)buf + len);
+    uint16_t *pos_conv_buf = (uint16_t*) ((char*)buf + txt_buf_size);
     lv_bidi_process_paragraph(str_in, bidi_txt? *bidi_txt: NULL, len, base_dir, pos_conv_buf, pos_conv_len);
     for (uint16_t i = 0; i < pos_conv_len; i++){
         if (GET_POS(pos_conv_buf[i]) == logical_pos){
@@ -295,7 +306,7 @@ static void fill_pos_conv(uint16_t * out, uint16_t len, uint16_t index)
         out[i] = SET_RTL_POS(index, false);
         index++;
     }
-} 
+}
 
 static lv_bidi_dir_t get_next_run(const char * txt, lv_bidi_dir_t base_dir, uint32_t max_len, uint32_t * len, uint16_t  * pos_conv_len)
 {
@@ -417,7 +428,7 @@ static void rtl_reverse(char * dest, const char * src, uint32_t len, uint16_t *p
             }
 
             if (dest) memcpy(&dest[wr], &src[first_weak], last_weak - first_weak + 1);
-            if (pos_conv_out) fill_pos_conv(&pos_conv_out[pos_conv_wr], pos_conv_last_weak - pos_conv_first_weak + 1, pos_conv_rd_base + pos_conv_first_weak); 
+            if (pos_conv_out) fill_pos_conv(&pos_conv_out[pos_conv_wr], pos_conv_last_weak - pos_conv_first_weak + 1, pos_conv_rd_base + pos_conv_first_weak);
             wr += last_weak - first_weak + 1;
             pos_conv_wr += pos_conv_last_weak - pos_conv_first_weak + 1;
         }

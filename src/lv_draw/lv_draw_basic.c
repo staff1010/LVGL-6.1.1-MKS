@@ -18,8 +18,6 @@
 
 #include <stddef.h>
 #include "lv_draw.h"
-//#include "../../../ui/inc/pic_manager.h"
-//#include "../../../ui/inc/draw_print_file.h"
 
 /*********************
  *      INCLUDES
@@ -501,8 +499,7 @@ void lv_draw_map(const lv_area_t * cords_p, const lv_area_t * mask_p, const uint
     uint8_t px_size_byte = alpha_byte ? LV_IMG_PX_SIZE_ALPHA_BYTE : sizeof(lv_color_t);
 
     /*If the map starts OUT of the masked area then calc. the first pixel*/
-    map_width = lv_area_get_width(cords_p);
-    map_height = lv_area_get_height(cords_p);
+    lv_coord_t map_width = lv_area_get_width(cords_p);
     if(cords_p->y1 < masked_a.y1) {
         map_p += (uint32_t)map_width * ((masked_a.y1 - cords_p->y1)) * px_size_byte;
     }
@@ -511,7 +508,7 @@ void lv_draw_map(const lv_area_t * cords_p, const lv_area_t * mask_p, const uint
     }
 
     lv_disp_t * disp    = lv_refr_get_disp_refreshing();
-    lv_disp_buf_t * vdb = lv_disp_get_buf(disp);//tan
+    lv_disp_buf_t * vdb = lv_disp_get_buf(disp);
 
     /*Stores coordinates relative to the current VDB*/
     masked_a.x1 = masked_a.x1 - vdb->area.x1;
@@ -519,13 +516,13 @@ void lv_draw_map(const lv_area_t * cords_p, const lv_area_t * mask_p, const uint
     masked_a.x2 = masked_a.x2 - vdb->area.x1;
     masked_a.y2 = masked_a.y2 - vdb->area.y1;
 
-    lv_coord_t vdb_width     = lv_area_get_width(&vdb->area); 
+    lv_coord_t vdb_width     = lv_area_get_width(&vdb->area);
     lv_color_t * vdb_buf_tmp = vdb->buf_act;
     vdb_buf_tmp += (uint32_t)vdb_width * masked_a.y1; /*Move to the first row*/
     vdb_buf_tmp += (uint32_t)masked_a.x1;             /*Move to the first col*/
 
     lv_coord_t row;
-    lv_coord_t map_useful_w = lv_area_get_width(&masked_a);  
+    lv_coord_t map_useful_w = lv_area_get_width(&masked_a);
 
     bool scr_transp = false;
 #if LV_COLOR_DEPTH == 32 && LV_COLOR_SCREEN_TRANSP
@@ -549,61 +546,56 @@ void lv_draw_map(const lv_area_t * cords_p, const lv_area_t * mask_p, const uint
         }
         /*Normal native VDB*/
         else {
-			//strcpy(&cur_pic.name[0],"bmp_tool.bin");
-			//strcpy(&cur_pic.name[0],"bmp_tool.bin");
-			if(cur_pic.is_gcode == 1)
-			{
-				if(!cur_pic.file_is_open)
-				{
-					lv_open_gcode_file((char *)&cur_pic.name[0]);
-					cur_pic.file_is_open=1;
-				}
-				if(cur_pic.bak_y != vdb->area.y1)
-				{
-					cur_pic.bak_y = vdb->area.y1;
-					
-					cur_pic.addr += offset_sum;
-					last_offset_sum = offset_sum;
-					offset_sum += (masked_a.y2-masked_a.y1+1)*map_width * px_size_byte;
-					
-				}
-				lv_pic_addr_offset=0;
-			}
+            if(cur_pic.is_gcode == 1)
+            {
+                if(!cur_pic.file_is_open)
+                {
+                    lv_open_gcode_file((char *)&cur_pic.name[0]);
+                    cur_pic.file_is_open=1;
+                }
+                if(cur_pic.bak_y != vdb->area.y1)
+                {
+                    cur_pic.bak_y = vdb->area.y1;
+                    
+                    cur_pic.addr += offset_sum;
+                    last_offset_sum = offset_sum;
+                    offset_sum += (masked_a.y2-masked_a.y1+1)*map_width * px_size_byte;
+                    
+                }
+                lv_pic_addr_offset=0;
+            }
             for(row = masked_a.y1; row <= masked_a.y2; row++) {
 #if LV_USE_GPU
-                if(disp->driver.gpu_blend_cb == false) {
+                if(disp->driver.gpu_blend_cb == NULL) {
                     sw_mem_blend(vdb_buf_tmp, (lv_color_t *)map_p, map_useful_w, opa);
                 } else {
                     disp->driver.gpu_blend_cb(&disp->driver, vdb_buf_tmp, (lv_color_t *)map_p, map_useful_w, opa);
                 }
 #else
-				//sw_mem_blend(vdb_buf_tmp, (lv_color_t *)map_p, map_useful_w, opa);
-				//memset(bmp_public_buf,0,sizeof(bmp_public_buf));
-				//lv_pic_test(bmp_public_buf,cur_pic.addr+lv_pic_addr_offset,map_width * px_size_byte);
-				//memcpy(vdb_buf_tmp, bmp_public_buf,map_useful_w * sizeof(lv_color_t));
-				if(cur_pic.is_gcode == 1)
-				{
-					lv_gcode_file_read((uint8_t *)vdb_buf_tmp);
-					lv_pic_addr_offset +=map_width * px_size_byte;
-					
-				}
-				else
-				{
-					sw_mem_blend(vdb_buf_tmp, (lv_color_t *)map_p, map_useful_w, opa);
-				}
+            if(cur_pic.is_gcode == 1)
+            {
+                lv_gcode_file_read((uint8_t *)vdb_buf_tmp);
+                lv_pic_addr_offset +=map_width * px_size_byte;
+                
+            }
+            else
+            {
+                sw_mem_blend(vdb_buf_tmp, (lv_color_t *)map_p, map_useful_w, opa);
+            }
+                sw_mem_blend(vdb_buf_tmp, (lv_color_t *)map_p, map_useful_w, opa);
 #endif
                 map_p += map_width * px_size_byte; /*Next row on the map*/
                 vdb_buf_tmp += vdb_width;          /*Next row on the VDB*/
             }
-		if(cur_pic.is_gcode == 1)
-		{
-			if(offset_sum >=map_width*map_height*2)	
-			{
-				offset_sum=0;
-				cur_pic.file_is_open=0;
-				lv_close_gcode_file();
-			}
-		}
+            if(cur_pic.is_gcode == 1)
+            {
+                if(offset_sum >=map_width*map_height*2)	
+                {
+                    offset_sum=0;
+                    cur_pic.file_is_open=0;
+                    lv_close_gcode_file();
+                }
+            }
         }
     }
 

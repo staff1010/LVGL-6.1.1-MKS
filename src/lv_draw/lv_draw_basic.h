@@ -27,21 +27,20 @@ extern "C" {
  *      DEFINES
  *********************/
 
-
 /**********************
  *      TYPEDEFS
  **********************/
 typedef struct disp_pic{
-	uint8_t is_gcode;
-	uint8_t file_is_open;
-	uint8_t got_addr;
-	uint8_t name[64];
-	uint8_t name_last[64];
-	uint32_t addr;
-	uint32_t addr_bak;
-	uint32_t cur_addr_offset;
-	uint32_t bak_addr_offset;
-	uint16_t bak_y;
+    uint8_t is_gcode;
+    uint8_t file_is_open;
+    uint8_t got_addr;
+    uint8_t name[64];
+    uint8_t name_last[64];
+    uint32_t addr;
+    uint32_t addr_bak;
+    uint32_t cur_addr_offset;
+    uint32_t bak_addr_offset;
+    uint16_t bak_y;
 }flash_pic;
 extern flash_pic cur_pic;
 

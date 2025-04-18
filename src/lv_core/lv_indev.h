@@ -95,7 +95,7 @@ void lv_indev_set_group(lv_indev_t * indev, lv_group_t * group);
  * @param indev pointer to an input device
  * @param group point to a group
  */
-void lv_indev_set_button_points(lv_indev_t * indev, const lv_point_t * points);
+void lv_indev_set_button_points(lv_indev_t * indev, const lv_point_t points[]);
 
 /**
  * Get the last point of an input device (for LV_INDEV_TYPE_POINTER and LV_INDEV_TYPE_BUTTON)
@@ -139,7 +139,7 @@ void lv_indev_wait_release(lv_indev_t * indev);
  * @param indev pointer to an inout device
  * @return pointer to the indev read refresher task. (NULL on error)
  */
-lv_task_t * lv_indev_get_read_task(lv_disp_t * indev);
+lv_task_t * lv_indev_get_read_task(lv_indev_t * indev);
 
 /**
  * Gets a pointer to the currently active object in indev proc functions.

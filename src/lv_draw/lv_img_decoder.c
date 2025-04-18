@@ -152,10 +152,6 @@ lv_res_t lv_img_decoder_open(lv_img_decoder_dsc_t * dsc, const void * src, const
         if(res == LV_RES_OK) break;
     }
 
-    if(res == LV_RES_INV) {
-        memset(dsc, 0, sizeof(lv_img_decoder_dsc_t));
-    }
-
     return res;
 }
 
@@ -392,9 +388,9 @@ lv_res_t lv_img_decoder_built_in_open(lv_img_decoder_t * decoder, lv_img_decoder
         user_data->opa                             = lv_mem_alloc(palette_size * sizeof(lv_opa_t));
         if(user_data->palette == NULL || user_data->opa == NULL) {
             LV_LOG_ERROR("img_decoder_built_in_open: out of memory");
-#if LV_USE_FILESYSTEM
-            LV_ASSERT_MEM(user_data->f);
-#endif
+
+            LV_ASSERT_MEM(user_data->palette);
+            LV_ASSERT_MEM(user_data->opa);
         }
 
         if(dsc->src_type == LV_IMG_SRC_FILE) {
@@ -509,6 +505,7 @@ void lv_img_decoder_built_in_close(lv_img_decoder_t * decoder, lv_img_decoder_ds
         }
 #endif
         if(user_data->palette) lv_mem_free(user_data->palette);
+        if(user_data->opa) lv_mem_free(user_data->opa);
 
         lv_mem_free(user_data);
 

@@ -93,10 +93,10 @@ typedef uint8_t lv_tabview_style_t;
 lv_obj_t * lv_tabview_create(lv_obj_t * par, const lv_obj_t * copy);
 
 /**
- * Delete all children of the scrl object, without deleting scrl child.
- * @param tabview pointer to an object
+ * Delete all children of a tab created by `lv_tabview_add_tab`.
+ * @param tab pointer to a tab
  */
-void lv_tabview_clean(lv_obj_t * tabview);
+void lv_tabview_clean(lv_obj_t * tab);
 
 /*======================
  * Add/remove functions
@@ -157,6 +157,16 @@ void lv_tabview_set_btns_pos(lv_obj_t * tabview, lv_tabview_btns_pos_t btns_pos)
  * @param en whether tab buttons are hidden
  */
 void lv_tabview_set_btns_hidden(lv_obj_t * tabview, bool en);
+
+/**
+ * Set the scroll bar mode of a tabview
+ * @param tabview pointer to a tabview object
+ * @param sb_mode the new mode from 'lv_page_sb_mode_t' enum
+ */
+static inline void lv_tabview_set_sb_mode(lv_obj_t * tabview, lv_sb_mode_t mode)
+{
+    lv_page_set_sb_mode(tabview, mode);
+}
 
 /*=====================
  * Getter functions

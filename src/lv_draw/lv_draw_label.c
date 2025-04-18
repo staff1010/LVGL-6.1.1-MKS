@@ -43,6 +43,7 @@ static uint8_t hex_char_to_num(char hex);
  *   GLOBAL FUNCTIONS
  **********************/
 
+
 /**
  * Write a text
  * @param coords coordinates of the label
@@ -52,7 +53,10 @@ static uint8_t hex_char_to_num(char hex);
  * @param txt 0 terminated text to write
  * @param flag settings for the text from 'txt_flag_t' enum
  * @param offset text offset in x and y direction (NULL if unused)
- * @param sel make the text selected in the range by drawing a background there
+ * @param sel_start start index of selected area (`LV_DRAW_LABEL_NO_TXT_SEL` if none)
+ * @param hint pointer to a `lv_draw_label_hint_t` variable.
+ * It is managed by the drawer to speed up the drawing of very long texts (thousands of lines).
+ * @param bidi_dir base direction of the text
  */
 void lv_draw_label(const lv_area_t * coords, const lv_area_t * mask, const lv_style_t * style, lv_opa_t opa_scale,
                    const char * txt, lv_txt_flag_t flag, lv_point_t * offset, lv_draw_label_txt_sel_t * sel,
@@ -179,6 +183,7 @@ void lv_draw_label(const lv_area_t * coords, const lv_area_t * mask, const lv_st
         char *bidi_txt = lv_draw_get_buf(line_end - line_start + 1);
         lv_bidi_process_paragraph(txt + line_start, bidi_txt, line_end - line_start, bidi_dir, NULL, 0);
 #else
+        (void)bidi_dir;
         const char *bidi_txt = txt + line_start;
 #endif
 

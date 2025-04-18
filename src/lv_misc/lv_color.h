@@ -348,7 +348,6 @@ static inline uint8_t lv_color_to8(lv_color_t color)
 
 static inline uint16_t lv_color_to16(lv_color_t color)
 {
-
 #if LV_COLOR_DEPTH == 1
     if(color.full == 0)
         return 0;
@@ -377,9 +376,7 @@ static inline uint16_t lv_color_to16(lv_color_t color)
 #endif
     LV_COLOR_SET_B16(ret, LV_COLOR_GET_B(color) >> 3);  /* 8 - 5  = 3*/
     return ret.full;
-#endif
-
-    return 0;
+#endif                         
 }
 
 static inline uint32_t lv_color_to32(lv_color_t color)
@@ -468,14 +465,14 @@ static inline uint8_t lv_color_brightness(lv_color_t color)
 
 /* The most simple macro to create a color from R,G and B values */
 #if LV_COLOR_DEPTH == 1
-#define LV_COLOR_MAKE(r8, g8, b8) ((lv_color_t){.full = ((b8 >> 7) | (g8 >> 7) | (r8 >> 7))})
+#define LV_COLOR_MAKE(r8, g8, b8) ((lv_color_t){.full = (uint8_t)((b8 >> 7) | (g8 >> 7) | (r8 >> 7))})
 #elif LV_COLOR_DEPTH == 8
-#define LV_COLOR_MAKE(r8, g8, b8) ((lv_color_t){{(b8 >> 6) & 0x3U, (g8 >> 5) & 0x7U, (r8 >> 5) & 0x7U}})
+#define LV_COLOR_MAKE(r8, g8, b8) ((lv_color_t){{(uint8_t)((b8 >> 6) & 0x3U), (uint8_t)((g8 >> 5) & 0x7U), (uint8_t)((r8 >> 5) & 0x7U)}})
 #elif LV_COLOR_DEPTH == 16
 #if LV_COLOR_16_SWAP == 0
-#define LV_COLOR_MAKE(r8, g8, b8) ((lv_color_t){{(b8 >> 3) & 0x1FU, (g8 >> 2) & 0x3FU, (r8 >> 3) & 0x1FU}})
+#define LV_COLOR_MAKE(r8, g8, b8) ((lv_color_t){{(uint16_t)((b8 >> 3) & 0x1FU), (uint16_t)((g8 >> 2) & 0x3FU), (uint16_t)((r8 >> 3) & 0x1FU)}})
 #else
-#define LV_COLOR_MAKE(r8, g8, b8) ((lv_color_t){{(g8 >> 5) & 0x7U, (r8 >> 3) & 0x1FU, (b8 >> 3) & 0x1FU, (g8 >> 2) & 0x7U}})
+#define LV_COLOR_MAKE(r8, g8, b8) ((lv_color_t){{(uint16_t)((g8 >> 5) & 0x7U), (uint16_t)((r8 >> 3) & 0x1FU), (uint16_t)((b8 >> 3) & 0x1FU), (uint16_t)((g8 >> 2) & 0x7U)}})
 #endif
 #elif LV_COLOR_DEPTH == 32
 #define LV_COLOR_MAKE(r8, g8, b8) ((lv_color_t){{b8, g8, r8, 0xff}}) /*Fix 0xff alpha*/
@@ -483,13 +480,13 @@ static inline uint8_t lv_color_brightness(lv_color_t color)
 
 static inline lv_color_t lv_color_make(uint8_t r, uint8_t g, uint8_t b)
 {
-	lv_color_t mks_clr;
-	
-	mks_clr.ch.red = r;
-	mks_clr.ch.green = g;
-	mks_clr.ch.blue = b;
-	return mks_clr;
-	//return LV_COLOR_MAKE(r, g, b);
+    lv_color_t mks_clr;
+
+    mks_clr.ch.red = r;
+    mks_clr.ch.green = g;
+    mks_clr.ch.blue = b;
+    return mks_clr;
+    //return LV_COLOR_MAKE(r, g, b);
 }
 
 static inline lv_color_t lv_color_hex(uint32_t c)

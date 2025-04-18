@@ -219,7 +219,7 @@ void lv_indev_set_group(lv_indev_t * indev, lv_group_t * group)
  * @param indev pointer to an input device
  * @param group point to a group
  */
-void lv_indev_set_button_points(lv_indev_t * indev, const lv_point_t * points)
+void lv_indev_set_button_points(lv_indev_t * indev, const lv_point_t points[])
 {
     if(indev->driver.type == LV_INDEV_TYPE_BUTTON) {
         indev->btn_points = points;
@@ -297,6 +297,7 @@ void lv_indev_get_vect(const lv_indev_t * indev, lv_point_t * point)
  */
 void lv_indev_wait_release(lv_indev_t * indev)
 {
+    if(indev == NULL)return;
     indev->proc.wait_until_release = 1;
 }
 
@@ -306,14 +307,14 @@ void lv_indev_wait_release(lv_indev_t * indev)
  * @param indev pointer to an input device
  * @return pointer to the indev read refresher task. (NULL on error)
  */
-lv_task_t * lv_indev_get_read_task(lv_disp_t * indev)
+lv_task_t * lv_indev_get_read_task(lv_indev_t * indev)
 {
     if(!indev) {
         LV_LOG_WARN("lv_indev_get_read_task: indev was NULL");
         return NULL;
     }
 
-    return indev->refr_task;
+    return indev->driver.read_task;
 }
 
 /**
@@ -659,6 +660,12 @@ static void indev_encoder_proc(lv_indev_t * i, lv_indev_data_t * data)
  */
 static void indev_button_proc(lv_indev_t * i, lv_indev_data_t * data)
 {
+    /* Die gracefully if i->btn_points is NULL */
+    if (i->btn_points == NULL) {
+        LV_LOG_WARN("indev_button_proc: btn_points was  NULL");
+        return;
+    }
+	
     i->proc.types.pointer.act_point.x = i->btn_points[data->btn_id].x;
     i->proc.types.pointer.act_point.y = i->btn_points[data->btn_id].y;
 

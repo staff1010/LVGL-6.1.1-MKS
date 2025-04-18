@@ -236,11 +236,11 @@ typedef struct _lv_obj_t
 #if LV_USE_USER_DATA
     lv_obj_user_data_t user_data; /**< Custom user data for object. */
 #endif
-	//mks
-	uint8_t IsGcode;
-	uint16_t mks_obj_id;
-	char mks_pic_name[255];
-	uint32_t pic_addr;
+    // mks
+    uint8_t IsGcode;
+    uint16_t mks_obj_id;
+    char mks_pic_name[255];
+    uint32_t pic_addr;
 } lv_obj_t;
 
 /*Protect some attributes (max. 8 bit)*/
@@ -315,6 +315,14 @@ void lv_obj_del_async(struct _lv_obj_t *obj);
  * @param obj pointer to an object
  */
 void lv_obj_clean(lv_obj_t * obj);
+
+/**
+ * Mark an area of an object as invalid.
+ * This area will be redrawn by 'lv_refr_task'
+ * @param obj pointer to an object
+ * @param area the area to redraw
+ */
+void lv_obj_invalidate_area(const lv_obj_t * obj, const lv_area_t * area);
 
 /**
  * Mark the object as invalid therefore its current position will be redrawn by 'lv_refr_task'
