@@ -56,7 +56,7 @@ extern "C" {
 #define LV_COLOR_PURPLE LV_COLOR_MAKE(0x80, 0x00, 0x80)
 #define LV_COLOR_ORANGE LV_COLOR_MAKE(0xFF, 0xA5, 0x00)
 #define LV_COLOR_BACKGROUND LV_COLOR_MAKE(0x1A, 0x1A, 0x1A)
-#define LV_COLOR_TEXT LV_COLOR_MAKE(0xFF, 0xFF, 0xFF)
+#define LV_COLOR_TEXT LV_COLOR_WHITE
 #define LV_COLOR_KEY_BACKGROUND LV_COLOR_MAKE(0xFF, 0x54, 0x49)
 
 
@@ -480,13 +480,7 @@ static inline uint8_t lv_color_brightness(lv_color_t color)
 
 static inline lv_color_t lv_color_make(uint8_t r, uint8_t g, uint8_t b)
 {
-    lv_color_t mks_clr;
-
-    mks_clr.ch.red = r;
-    mks_clr.ch.green = g;
-    mks_clr.ch.blue = b;
-    return mks_clr;
-    //return LV_COLOR_MAKE(r, g, b);
+    return LV_COLOR_MAKE(r, g, b);
 }
 
 static inline lv_color_t lv_color_hex(uint32_t c)

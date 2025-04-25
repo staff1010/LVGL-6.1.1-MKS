@@ -239,7 +239,7 @@ typedef struct _lv_obj_t
     // mks
     uint8_t IsGcode;
     uint16_t mks_obj_id;
-    char mks_pic_name[255];
+    char mks_pic_name[64];
     uint32_t pic_addr;
 } lv_obj_t;
 

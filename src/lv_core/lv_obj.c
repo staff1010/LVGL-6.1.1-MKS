@@ -1473,11 +1473,11 @@ void lv_obj_set_event_cb_mks(lv_obj_t * obj, lv_event_cb_t event_cb,uint16_t id,
 {
     LV_ASSERT_OBJ(obj, LV_OBJX_NAME);
 
+    // mks
     obj->event_cb = event_cb;
-	obj->mks_obj_id = id;
-	strcpy(obj->mks_pic_name,pic_file_name);
-	//obj->pic_addr = lv_get_pic_addr(&cur_pic.name[0]);
-	obj->IsGcode=is_code;
+    obj->mks_obj_id = id;
+    strcpy(obj->mks_pic_name,pic_file_name);
+    obj->IsGcode = is_code;
 }
 
 /**

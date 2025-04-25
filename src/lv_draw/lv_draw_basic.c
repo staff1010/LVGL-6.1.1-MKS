@@ -475,8 +475,6 @@ uint32_t offset_sum,last_offset_sum;
 
 
 flash_pic cur_pic;
-lv_coord_t map_width;
-lv_coord_t map_height;
 void lv_draw_map(const lv_area_t * cords_p, const lv_area_t * mask_p, const uint8_t * map_p, lv_opa_t opa,
                  bool chroma_key, bool alpha_byte, lv_color_t recolor, lv_opa_t recolor_opa)
 {
@@ -546,7 +544,7 @@ void lv_draw_map(const lv_area_t * cords_p, const lv_area_t * mask_p, const uint
         }
         /*Normal native VDB*/
         else {
-            if(cur_pic.is_gcode == 1)
+            if(cur_pic.is_gcode == 1)               // mks
             {
                 if(!cur_pic.file_is_open)
                 {
@@ -559,7 +557,7 @@ void lv_draw_map(const lv_area_t * cords_p, const lv_area_t * mask_p, const uint
                     
                     cur_pic.addr += offset_sum;
                     last_offset_sum = offset_sum;
-                    offset_sum += (masked_a.y2-masked_a.y1+1)*map_width * px_size_byte;
+                    offset_sum += (masked_a.y2-masked_a.y1+1) * map_width * px_size_byte;
                     
                 }
                 lv_pic_addr_offset=0;
@@ -572,24 +570,22 @@ void lv_draw_map(const lv_area_t * cords_p, const lv_area_t * mask_p, const uint
                     disp->driver.gpu_blend_cb(&disp->driver, vdb_buf_tmp, (lv_color_t *)map_p, map_useful_w, opa);
                 }
 #else
-            if(cur_pic.is_gcode == 1)
-            {
-                lv_gcode_file_read((uint8_t *)vdb_buf_tmp);
-                lv_pic_addr_offset +=map_width * px_size_byte;
-                
-            }
-            else
-            {
-                sw_mem_blend(vdb_buf_tmp, (lv_color_t *)map_p, map_useful_w, opa);
-            }
-                sw_mem_blend(vdb_buf_tmp, (lv_color_t *)map_p, map_useful_w, opa);
+                if(cur_pic.is_gcode == 1)               // mks
+                {
+                    lv_gcode_file_read((uint8_t *)vdb_buf_tmp);
+                    lv_pic_addr_offset +=map_width * px_size_byte;
+                }
+                else
+                {
+                    sw_mem_blend(vdb_buf_tmp, (lv_color_t *)map_p, map_useful_w, opa);
+                }
 #endif
                 map_p += map_width * px_size_byte; /*Next row on the map*/
                 vdb_buf_tmp += vdb_width;          /*Next row on the VDB*/
             }
-            if(cur_pic.is_gcode == 1)
+            if(cur_pic.is_gcode == 1)               // mks
             {
-                if(offset_sum >=map_width*map_height*2)	
+                if(offset_sum >= map_width * lv_area_get_height(cords_p) * px_size_byte)
                 {
                     offset_sum=0;
                     cur_pic.file_is_open=0;
